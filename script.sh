@@ -14,7 +14,6 @@ for mediaFile in `ls $ASSETSFOLDER | grep .mp4`; do
     OUTPUT360=$OUTPUT-$DURATION-360
     OUTPUT720=$OUTPUT-$DURATION-720
 
-    # Renderizar
     echo 'rendering in 720p'
     ffmpeg -y -i $INPUT \
         -c:a aac -ac 2 \
@@ -25,7 +24,36 @@ for mediaFile in `ls $ASSETSFOLDER | grep .mp4`; do
         -maxrate 1500k \
         -bufsize 1000k \
         -vf "scale=-1:720" \
-        # -v quiet \
-        # stoped class at 21:00 with problems on script
         $OUTPUT720.mp4
+        # -v quiet \
+        
+    echo 'rendering in 360p'
+    ffmpeg -y -i $INPUT \
+        -c:a aac -ac 2 \
+        -vcodec h264 -acodec aac \
+        -ab 128k \
+        -movflags frag_keyframe+empty_moov+default_base_moof \
+        -b:v 400k \
+        -maxrate 400k \
+        -bufsize 400k \
+        -vf "scale=-1:360" \
+        $OUTPUT360.mp4
+        # -v quiet \
+
+    echo 'rendering in 144p'
+    ffmpeg -y -i $INPUT \
+        -c:a aac -ac 2 \
+        -vcodec h264 -acodec aac \
+        -ab 128k \
+        -movflags frag_keyframe+empty_moov+default_base_moof \
+        -b:v 300k \
+        -maxrate 300k \
+        -bufsize 300k \
+        -vf "scale=256:144" \
+        $OUTPUT144.mp4
+        # -v quiet \
+    
+    echo $OUTPUT144.mp4
+    echo $OUTPUT360.mp4
+    echo $OUTPUT720.mp4
 done
